@@ -1,0 +1,146 @@
+# Settings for your admin page (Pages CMS).
+# This decides what you see when you log in to post.
+
+media:
+  input: static/images/uploads
+  output: /images/uploads
+  rename: safe
+  categories: [image]
+
+content:
+  - name: writings
+    label: Writings
+    type: collection
+    path: content/writings
+    filename: "{year}-{month}-{day}-{primary}.md"
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: kind
+        label: Kind of writing
+        type: select
+        options:
+          values: [Poetry, Reflection, America]
+      - name: summary
+        label: Short description (shown in lists; leave blank to use the opening lines)
+        type: text
+      - name: draft
+        label: Draft (hide from the website)
+        type: boolean
+      - name: body
+        label: Text (for poems, press Enter at the end of each line and leave an empty line between stanzas)
+        type: rich-text
+        options:
+          format: html
+
+  - name: videos
+    label: Videos (Bartholomew Family Fun)
+    type: collection
+    path: content/videos
+    filename: "{year}-{month}-{day}-{primary}.md"
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: youtube
+        label: YouTube link (paste the link from the Share button)
+        type: string
+      - name: place
+        label: Place
+        type: string
+      - name: thumbnail
+        label: Cover image (optional; the YouTube thumbnail is used if you leave this empty)
+        type: image
+      - name: draft
+        label: Draft (hide from the website)
+        type: boolean
+      - name: body
+        label: Notes about the trip (optional)
+        type: rich-text
+        options:
+          format: html
+
+  - name: posts
+    label: Posts
+    type: collection
+    path: content/posts
+    filename: "{year}-{month}-{day}-{primary}.md"
+    format: yaml-frontmatter
+    view:
+      primary: title
+      sort: date
+      order: desc
+    fields:
+      - name: title
+        label: Title
+        type: string
+        required: true
+      - name: date
+        label: Date
+        type: date
+        required: true
+      - name: image
+        label: Photo (optional)
+        type: image
+      - name: draft
+        label: Draft (hide from the website)
+        type: boolean
+      - name: body
+        label: Post
+        type: rich-text
+        options:
+          format: html
+
+  - name: about
+    label: About page and links
+    type: file
+    path: content/about.md
+    format: yaml-frontmatter
+    fields:
+      - name: title
+        label: Page title
+        type: string
+      - name: tagline
+        label: Tagline (shown under the site name on the home page)
+        type: string
+      - name: site_url
+        label: Website address, once you have it (for example https://blueandgreenworld.com)
+        type: string
+      - name: youtube_channel
+        label: YouTube channel link
+        type: string
+      - name: instagram
+        label: Instagram link
+        type: string
+      - name: tiktok
+        label: TikTok link
+        type: string
+      - name: facebook
+        label: Facebook link
+        type: string
+      - name: body
+        label: About text
+        type: rich-text
+        options:
+          format: html
