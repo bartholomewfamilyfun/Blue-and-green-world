@@ -164,7 +164,11 @@ a:hover { color: var(--pine); }
 .kind-poetry { color: var(--sea); }
 .kind-reflections { color: var(--pine); }
 .kind-america { color: #9a3b33; }
-@media (prefers-color-scheme: dark) { .kind-america { color: #e5958c; } }
+.kind-1865-exercise { color: #7a5a14; }
+@media (prefers-color-scheme: dark) {
+  .kind-america { color: #e5958c; }
+  .kind-1865-exercise { color: #dcb866; }
+}
 
 /* ---------- reading pages ---------- */
 
@@ -199,6 +203,14 @@ a:hover { color: var(--pine); }
 .is-poem .signoff { margin-left: auto; margin-right: auto; max-width: 30rem; }
 .signoff p { margin: 0 0 0.4rem; }
 .signoff-slogan { color: var(--ink); font-weight: 500; font-size: 1.2rem; }
+
+.series-link {
+  max-width: var(--measure);
+  margin: 1.5rem 0 0;
+  font-family: var(--sans);
+  color: var(--muted);
+}
+.series-link a { font-weight: 700; }
 
 .pager {
   max-width: var(--measure);

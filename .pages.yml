@@ -31,7 +31,7 @@ content:
         label: Kind of writing
         type: select
         options:
-          values: [Poetry, Reflection, America]
+          values: [Poetry, Reflection, America, "1865 Exercise"]
       - name: summary
         label: Short description (shown in lists; leave blank to use the opening lines)
         type: text

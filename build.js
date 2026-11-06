@@ -168,7 +168,15 @@ const KINDS = [
   { name: "Poetry", slug: "poetry", blurb: "Poems." },
   { name: "Reflection", slug: "reflections", blurb: "Introspection, written down." },
   { name: "America", slug: "america", blurb: "Writing on America." },
+  {
+    name: "1865 Exercise",
+    slug: "1865-exercise",
+    series: true,
+    blurb:
+      "Emerging technology, seen from 1865. Standing at emancipation, no one could have predicted where the path would lead, yet it made sense in hindsight. Each article names the real costs and makes the case that a fantastic future is also a realistic one.",
+  },
 ];
+const SERIES = KINDS.find((k) => k.series);
 const kindOf = (w) => KINDS.find((k) => k.name === w.kind) || KINDS[1];
 
 const socials = [
@@ -183,6 +191,7 @@ const socials = [
 function layout({ title, description, section, body, wide = false, ogImage = "" }) {
   const nav = [
     ["Writings", "/writings/", "writings"],
+    ["1865 Exercise", `/writings/${SERIES.slug}/`, "series"],
     ["Videos", "/videos/", "videos"],
     ["Posts", "/posts/", "posts"],
     ["About", "/about/", "about"],
@@ -330,7 +339,7 @@ function writingsIndex(active) {
   return layout({
     title: active ? active.name : "Writings",
     description: active ? active.blurb : "Poems, reflections, and essays on America.",
-    section: "writings",
+    section: active && active.series ? "series" : "writings",
     body: `
 <header class="page-head">
   <h1>${active ? esc(active.name) : "Writings"}</h1>
@@ -343,16 +352,20 @@ ${list.length ? `<ul class="writing-list">${list.map(writingItem).join("")}</ul>
 write("/writings/", writingsIndex(null));
 KINDS.forEach((k) => write(`/writings/${k.slug}/`, writingsIndex(k)));
 
-writings.forEach((w, i) => {
+writings.forEach((w) => {
   const k = kindOf(w);
-  const newer = writings[i - 1];
-  const older = writings[i + 1];
+  // 1865 Exercise articles page through the series; everything else pages through all writing
+  const pool = k.series ? writings.filter((x) => kindOf(x) === k) : writings;
+  const i = pool.indexOf(w);
+  const newer = pool[i - 1];
+  const older = pool[i + 1];
+  const where = k.series ? ` in the ${k.name}` : "";
   write(
     `/writings/${w.slug}/`,
     layout({
       title: w.title,
       description: w.summary || plainText(w.html),
-      section: "writings",
+      section: k.series ? "series" : "writings",
       body: `
 <article class="piece ${k.slug === "poetry" ? "is-poem" : ""}">
   <header class="piece-head">
@@ -365,10 +378,11 @@ writings.forEach((w, i) => {
     <p>The world isn't a line with two ends, black and white, us and them. It's round, and we're all on it together.</p>
     <p class="signoff-slogan">The world isn't black and white. It's blue and green.</p>
   </aside>
+  ${k.series ? `<p class="series-link">This article is part of the ${esc(k.name)}. <a href="/writings/${k.slug}/">See every ${esc(k.name)} article</a></p>` : ""}
 </article>
 <nav class="pager" aria-label="More writing">
-  ${older ? `<a class="older" href="/writings/${older.slug}/"><span>Earlier</span>${esc(older.title)}</a>` : "<span></span>"}
-  ${newer ? `<a class="newer" href="/writings/${newer.slug}/"><span>Later</span>${esc(newer.title)}</a>` : "<span></span>"}
+  ${older ? `<a class="older" href="/writings/${older.slug}/"><span>Earlier${where}</span>${esc(older.title)}</a>` : "<span></span>"}
+  ${newer ? `<a class="newer" href="/writings/${newer.slug}/"><span>Later${where}</span>${esc(newer.title)}</a>` : "<span></span>"}
 </nav>`,
     })
   );
