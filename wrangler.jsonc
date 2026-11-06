@@ -2,6 +2,7 @@
 {
   "name": "blue-and-green-world",
   "compatibility_date": "2026-10-01",
+  "workers_dev": true,
   "build": {
     "command": "node build.js"
   },
