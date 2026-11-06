@@ -1,7 +1,10 @@
-// Tells Cloudflare where the finished website is after `node build.js` runs.
+// Tells Cloudflare how to build the website and where the finished pages are.
 {
   "name": "blue-and-green-world",
   "compatibility_date": "2026-10-01",
+  "build": {
+    "command": "node build.js"
+  },
   "assets": {
     "directory": "./dist",
     "not_found_handling": "404-page"
