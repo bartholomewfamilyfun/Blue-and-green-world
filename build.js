@@ -338,12 +338,12 @@ function writingsIndex(active) {
     .join("");
   return layout({
     title: active ? active.name : "Writings",
-    description: active ? active.blurb : "Poems, reflections, and essays on America.",
+    description: active ? active.blurb : "Poems, reflections, essays on America, and the 1865 Exercise.",
     section: active && active.series ? "series" : "writings",
     body: `
 <header class="page-head">
   <h1>${active ? esc(active.name) : "Writings"}</h1>
-  <p>${active ? esc(active.blurb) : "Poems, reflections, and essays on America."}</p>
+  <p>${active ? esc(active.blurb) : "Poems, reflections, essays on America, and the 1865 Exercise."}</p>
   <nav class="filters" aria-label="Kinds of writing">${filters}</nav>
 </header>
 ${list.length ? `<ul class="writing-list">${list.map(writingItem).join("")}</ul>` : empty("writings here", "")}`,
