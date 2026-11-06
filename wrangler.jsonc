@@ -3,6 +3,10 @@
   "name": "blue-and-green-world",
   "compatibility_date": "2026-10-01",
   "workers_dev": true,
+  "routes": [
+    { "pattern": "blueandgreenworld.com", "custom_domain": true },
+    { "pattern": "www.blueandgreenworld.com", "custom_domain": true }
+  ],
   "build": {
     "command": "node build.js"
   },
