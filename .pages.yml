@@ -32,6 +32,9 @@ content:
         type: select
         options:
           values: [Poetry, Reflection, America, "1865 Exercise"]
+      - name: episode
+        label: Episode number (series only; sets the reading order on the series page)
+        type: number
       - name: summary
         label: Short description (shown in lists; leave blank to use the opening lines)
         type: text
@@ -109,6 +112,9 @@ content:
       - name: article
         label: Full article this is a quick read of (optional; its title or web address, e.g. the-ladder). Links the two pages together
         type: string
+      - name: part
+        label: Quick read number (optional; sets the order the quick reads are listed on the article)
+        type: number
       - name: draft
         label: Draft (hide from the website)
         type: boolean

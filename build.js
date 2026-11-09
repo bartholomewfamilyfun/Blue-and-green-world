@@ -131,8 +131,11 @@ function loadCollection(name) {
       return { ...data, file: f, slug, date: toDate(data.date, f), html: bodyHtml(body) };
     })
     .filter((item) => item.draft !== true)
-    .sort((a, b) => b.date - a.date);
+    .sort((a, b) => b.date - a.date || (Number(b.episode) || 0) - (Number(a.episode) || 0));
 }
+
+// Series pages read in order: Episode 1 at the top, newer episodes below.
+const seriesOrder = (a, b) => (Number(a.episode) || 0) - (Number(b.episode) || 0) || a.date - b.date;
 
 function write(urlPath, html) {
   const file = urlPath.endsWith("/") ? path.join(OUT, urlPath, "index.html") : path.join(OUT, urlPath);
@@ -179,7 +182,7 @@ posts.forEach((p) => {
   if (!p.parent) console.warn(`Post "${p.title}": no writing matches article "${p.article}"`);
 });
 writings.forEach((w) => {
-  w.quickReads = posts.filter((p) => p.parent === w).sort((a, b) => a.date - b.date || a.file.localeCompare(b.file));
+  w.quickReads = posts.filter((p) => p.parent === w).sort((a, b) => (Number(a.part) || 0) - (Number(b.part) || 0) || a.date - b.date || a.file.localeCompare(b.file));
 });
 
 const KINDS = [
@@ -351,7 +354,8 @@ write(
 
 // Writings index + one page per kind
 function writingsIndex(active) {
-  const list = active ? writings.filter((w) => kindOf(w).slug === active.slug) : writings;
+  let list = active ? writings.filter((w) => kindOf(w).slug === active.slug) : writings;
+  if (active && active.series) list = [...list].sort(seriesOrder);
   const filters = [`<a href="/writings/"${!active ? ' aria-current="page"' : ""}>All</a>`]
     .concat(KINDS.map((k) => `<a href="/writings/${k.slug}/"${active === k ? ' aria-current="page"' : ""}>${k.name}</a>`))
     .join("");
@@ -374,7 +378,7 @@ KINDS.forEach((k) => write(`/writings/${k.slug}/`, writingsIndex(k)));
 writings.forEach((w) => {
   const k = kindOf(w);
   // 1865 Exercise articles page through the series; everything else pages through all writing
-  const pool = k.series ? writings.filter((x) => kindOf(x) === k) : writings;
+  const pool = k.series ? writings.filter((x) => kindOf(x) === k).sort(seriesOrder).reverse() : writings;
   const i = pool.indexOf(w);
   const newer = pool[i - 1];
   const older = pool[i + 1];
