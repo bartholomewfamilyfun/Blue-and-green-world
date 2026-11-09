@@ -35,6 +35,9 @@ content:
       - name: summary
         label: Short description (shown in lists; leave blank to use the opening lines)
         type: text
+      - name: short_version
+        label: The short version (optional; shown in a box above the article, e.g. an episode summary)
+        type: text
       - name: draft
         label: Draft (hide from the website)
         type: boolean
@@ -103,6 +106,9 @@ content:
       - name: image
         label: Photo (optional)
         type: image
+      - name: article
+        label: Full article this is a quick read of (optional; its title or web address, e.g. the-ladder). Links the two pages together
+        type: string
       - name: draft
         label: Draft (hide from the website)
         type: boolean

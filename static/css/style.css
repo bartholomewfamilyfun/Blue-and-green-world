@@ -302,3 +302,16 @@ a:hover { color: var(--pine); }
   .pager { grid-template-columns: 1fr; }
   .pager .newer { text-align: left; }
 }
+
+/* reading time, quick-read links, and the short version at the top of an article */
+.readnav { font-family: var(--sans); font-size: 0.95rem; color: var(--muted); margin: 0.6rem 0 0; }
+.readnav a { font-weight: 700; }
+.short-version {
+  max-width: var(--measure); margin: 0 0 2.5rem; padding: 1.1rem 1.3rem;
+  border-left: 4px solid transparent; border-image: linear-gradient(180deg, var(--sea), var(--pine)) 1;
+  background: var(--surface); font-size: 1.1rem; line-height: 1.6;
+}
+.short-version p { margin: 0 0 0.8em; }
+.short-version p:last-child { margin-bottom: 0; }
+.short-version-label { font-family: var(--sans); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.post-readnav { flex-basis: 100%; margin-top: 0.2rem; }

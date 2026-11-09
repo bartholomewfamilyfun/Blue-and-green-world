@@ -87,6 +87,12 @@ function toDate(value, filename) {
   return d;
 }
 
+// Reading time at about 238 words a minute (a typical adult reading speed)
+function readMinutes(html) {
+  const words = plainText(html, Infinity).split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 238));
+}
+
 const fmtDate = (d) =>
   d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" });
 
@@ -163,6 +169,18 @@ const site = {
 const writings = loadCollection("writings");
 const videos = loadCollection("videos");
 const posts = loadCollection("posts");
+
+// Quick reads: a post can name the full article it comes from (by its web address or its title).
+const norm = (x) => String(x || "").toLowerCase().replace(/^.*\/writings\//, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+posts.forEach((p) => {
+  if (!p.article) return;
+  const key = norm(p.article);
+  p.parent = writings.find((w) => w.slug === key || norm(w.title) === key) || null;
+  if (!p.parent) console.warn(`Post "${p.title}": no writing matches article "${p.article}"`);
+});
+writings.forEach((w) => {
+  w.quickReads = posts.filter((p) => p.parent === w).sort((a, b) => a.date - b.date || a.file.localeCompare(b.file));
+});
 
 const KINDS = [
   { name: "Poetry", slug: "poetry", blurb: "Poems." },
@@ -261,7 +279,7 @@ function writingItem(w) {
     <span class="kind kind-${k.slug}">${esc(k.name)}</span>
     <span class="writing-title">${esc(w.title)}</span>
     <span class="summary">${esc(w.summary || plainText(w.html, 160))}</span>
-    <span class="meta">${fmtDate(w.date)}</span>
+    <span class="meta">${fmtDate(w.date)}${k.slug === "poetry" ? "" : ` · ${readMinutes(w.html)} min read`}</span>
   </a>
 </li>`;
 }
@@ -270,7 +288,8 @@ function postItem(p, { full = true } = {}) {
   return `<article class="post">
   <header>
     <h3><a href="/posts/${p.slug}/">${esc(p.title)}</a></h3>
-    <time datetime="${p.date.toISOString().slice(0, 10)}">${fmtDate(p.date)}</time>
+    <span class="meta"><time datetime="${p.date.toISOString().slice(0, 10)}">${fmtDate(p.date)}</time>${p.parent ? ` · ${readMinutes(p.html)} min read` : ""}</span>
+    ${p.parent ? `<p class="readnav post-readnav">Want the full story? <a href="/writings/${p.parent.slug}/">Read the full article, <em>${esc(p.parent.title)}</em> (${readMinutes(p.parent.html)} min)</a></p>` : ""}
   </header>
   ${p.image ? `<img class="post-image" src="${esc(p.image)}" alt="" loading="lazy">` : ""}
   <div class="prose">${full ? p.html : `<p>${esc(plainText(p.html, 220))}</p>`}</div>
@@ -371,8 +390,10 @@ writings.forEach((w) => {
   <header class="piece-head">
     <a class="kind kind-${k.slug}" href="/writings/${k.slug}/">${esc(k.name)}</a>
     <h1>${esc(w.title)}</h1>
-    <time datetime="${w.date.toISOString().slice(0, 10)}">${fmtDate(w.date)}</time>
+    <time datetime="${w.date.toISOString().slice(0, 10)}">${fmtDate(w.date)}</time>${k.slug === "poetry" ? "" : ` <span class="meta">· ${readMinutes(w.html)} min read</span>`}
+    ${w.quickReads.length ? `<p class="readnav">Short on time? Try the quick ${w.quickReads.length > 1 ? "reads" : "read"}: ${w.quickReads.map((q) => `<a href="/posts/${q.slug}/">${esc(q.title)}</a> (${readMinutes(q.html)} min)`).join(" · ")}</p>` : ""}
   </header>
+  ${w.short_version ? `<aside class="short-version" aria-label="The short version"><p class="short-version-label">The short version</p>${bodyHtml(w.short_version)}</aside>` : ""}
   <div class="prose ${k.slug === "poetry" ? "poem" : ""}">${w.html}</div>
   <aside class="signoff" aria-label="About Blue and Green World">
     <p>The world isn't a line with two ends, black and white, us and them. It's round, and we're all on it together.</p>
