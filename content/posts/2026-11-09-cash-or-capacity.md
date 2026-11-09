@@ -1,5 +1,6 @@
 ---
 title: "Cash or Capacity"
+cover: /images/covers/cash-or-capacity.jpg
 date: "2026-11-09"
 article: "episode-2-data-centers"
 episode: 2

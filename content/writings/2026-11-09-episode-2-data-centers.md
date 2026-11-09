@@ -1,5 +1,6 @@
 ---
 title: "Episode 2: What's Really Good With Data Centers?"
+cover: /images/covers/episode-2-data-centers.jpg
 date: "2026-11-09"
 kind: "1865 Exercise"
 episode: 2

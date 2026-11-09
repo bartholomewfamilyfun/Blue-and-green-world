@@ -1,5 +1,6 @@
 ---
 title: "The Furnace That Answers Your Email"
+cover: /images/covers/the-furnace-that-answers-your-email.jpg
 date: "2026-11-09"
 article: "episode-2-data-centers"
 episode: 2

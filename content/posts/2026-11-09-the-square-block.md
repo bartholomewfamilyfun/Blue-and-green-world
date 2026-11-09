@@ -1,5 +1,6 @@
 ---
 title: "The Square Block"
+cover: /images/covers/the-square-block.jpg
 date: "2026-11-09"
 article: "episode-1-the-1865-exercise"
 episode: 1

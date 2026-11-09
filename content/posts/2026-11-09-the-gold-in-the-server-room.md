@@ -1,5 +1,6 @@
 ---
 title: "The Gold in the Server Room"
+cover: /images/covers/the-gold-in-the-server-room.jpg
 date: "2026-11-09"
 article: "episode-2-data-centers"
 episode: 2

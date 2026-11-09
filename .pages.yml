@@ -35,6 +35,9 @@ content:
       - name: episode
         label: Episode number (series only; sets the reading order on the series page)
         type: number
+      - name: cover
+        label: Cover image (1200 x 630; shown at the top, in lists, and when the link is shared)
+        type: image
       - name: summary
         label: Short description (shown in lists; leave blank to use the opening lines)
         type: text
@@ -108,6 +111,9 @@ content:
         required: true
       - name: image
         label: Photo (optional)
+        type: image
+      - name: cover
+        label: Cover image (optional, 1200 x 630; used when the link is shared)
         type: image
       - name: article
         label: Full article this is a quick read of (optional; its title or web address, e.g. the-ladder). Links the two pages together

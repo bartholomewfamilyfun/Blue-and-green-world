@@ -1,5 +1,6 @@
 ---
 title: "Episode 3: The Ladder"
+cover: /images/covers/episode-3-the-ladder.jpg
 date: "2026-11-09"
 kind: "1865 Exercise"
 episode: 3

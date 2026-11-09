@@ -138,6 +138,13 @@ function loadCollection(name) {
 const seriesOrder = (a, b) => (Number(a.episode) || 0) - (Number(b.episode) || 0) || a.date - b.date;
 
 function write(urlPath, html) {
+  if (html.includes("<!--PAGE-URL-->")) {
+    const pageUrl = (site.url || "") + urlPath;
+    html = html.replace(
+      "<!--PAGE-URL-->",
+      urlPath === "/404.html" ? "" : `<link rel="canonical" href="${esc(pageUrl)}">\n<meta property="og:url" content="${esc(pageUrl)}">`
+    );
+  }
   const file = urlPath.endsWith("/") ? path.join(OUT, urlPath, "index.html") : path.join(OUT, urlPath);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, html);
@@ -161,6 +168,16 @@ const about = (() => {
   const { data, body } = parseFrontMatter(fs.readFileSync(f, "utf8"));
   return { data, html: bodyHtml(body) };
 })();
+
+// Cover images: `cover: /images/covers/<name>.jpg` in an article's front matter.
+// A tall Pinterest/Instagram version, if present, sits beside it as <name>-pin.jpg.
+const absUrl = (u) => (u && u.startsWith("/") ? (site.url || "") + u : u || "");
+const pinOf = (cover) => {
+  if (!cover) return "";
+  const pin = cover.replace(/(\.[a-z]+)$/i, "-pin$1");
+  return fs.existsSync(path.join(STATIC, pin)) ? pin : cover;
+};
+const DEFAULT_OG = "/images/og-default.jpg";
 
 const site = {
   title: "Blue and Green World",
@@ -209,7 +226,7 @@ const socials = [
 
 // ---------- templates ----------
 
-function layout({ title, description, section, body, wide = false, ogImage = "" }) {
+function layout({ title, description, section, body, wide = false, ogImage = "", ogType = "website" }) {
   const nav = [
     ["Writings", "/writings/", "writings"],
     ["1865 Exercise", `/writings/${SERIES.slug}/`, "series"],
@@ -229,7 +246,12 @@ function layout({ title, description, section, body, wide = false, ogImage = "" 
 <meta name="description" content="${esc(description || site.tagline)}">
 <meta property="og:title" content="${esc(title || site.title)}">
 <meta property="og:description" content="${esc(description || site.tagline)}">
-${ogImage ? `<meta property="og:image" content="${esc(ogImage)}">` : ""}
+<meta property="og:site_name" content="${esc(site.title)}">
+<meta property="og:type" content="${ogType}">
+<meta property="og:image" content="${esc(absUrl(ogImage || DEFAULT_OG))}">
+${!ogImage || ogImage.startsWith("/") ? `<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">` : ""}
+<meta name="twitter:card" content="summary_large_image">
+<!--PAGE-URL-->
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="${esc(site.title)}" href="/feed.xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -277,8 +299,9 @@ function videoCard(v) {
 
 function writingItem(w) {
   const k = kindOf(w);
-  return `<li class="writing-item">
+  return `<li class="writing-item${w.cover ? " has-cover" : ""}">
   <a href="/writings/${w.slug}/">
+    ${w.cover ? `<img class="item-cover" src="${esc(w.cover)}" alt="" width="1200" height="630" loading="lazy">` : ""}
     <span class="kind kind-${k.slug}">${esc(k.name)}</span>
     <span class="writing-title">${esc(w.title)}</span>
     <span class="summary">${esc(w.summary || plainText(w.html, 160))}</span>
@@ -294,6 +317,7 @@ function postItem(p, { full = true } = {}) {
     <span class="meta"><time datetime="${p.date.toISOString().slice(0, 10)}">${fmtDate(p.date)}</time>${p.parent ? ` · ${readMinutes(p.html)} min read` : ""}</span>
     ${p.parent ? `<p class="readnav post-readnav">Want the full story? <a href="/writings/${p.parent.slug}/">Read the full article, <em>${esc(p.parent.title)}</em> (${readMinutes(p.parent.html)} min)</a></p>` : ""}
   </header>
+  ${p.cover && full ? `<figure class="cover"><img src="${esc(p.cover)}" alt="" width="1200" height="630" loading="lazy"></figure>` : ""}
   ${p.image ? `<img class="post-image" src="${esc(p.image)}" alt="" loading="lazy">` : ""}
   <div class="prose">${full ? p.html : `<p>${esc(plainText(p.html, 220))}</p>`}</div>
 </article>`;
@@ -389,6 +413,8 @@ writings.forEach((w) => {
       title: w.title,
       description: w.summary || plainText(w.html),
       section: k.series ? "series" : "writings",
+      ogImage: w.cover,
+      ogType: "article",
       body: `
 <article class="piece ${k.slug === "poetry" ? "is-poem" : ""}">
   <header class="piece-head">
@@ -397,6 +423,7 @@ writings.forEach((w) => {
     <time datetime="${w.date.toISOString().slice(0, 10)}">${fmtDate(w.date)}</time>${k.slug === "poetry" ? "" : ` <span class="meta">· ${readMinutes(w.html)} min read</span>`}
     ${w.quickReads.length ? `<p class="readnav">Short on time? Try the quick ${w.quickReads.length > 1 ? "reads" : "read"}: ${w.quickReads.map((q) => `<a href="/posts/${q.slug}/">${esc(q.title)}</a> (${readMinutes(q.html)} min)`).join(" · ")}</p>` : ""}
   </header>
+  ${w.cover ? `<figure class="cover"><img src="${esc(w.cover)}" alt="" width="1200" height="630"></figure>` : ""}
   ${w.short_version ? `<aside class="short-version" aria-label="The short version"><p class="short-version-label">The short version</p>${bodyHtml(w.short_version)}</aside>` : ""}
   <div class="prose ${k.slug === "poetry" ? "poem" : ""}">${w.html}</div>
   <aside class="signoff" aria-label="About Blue and Green World">
@@ -477,6 +504,8 @@ posts.forEach((p) =>
       title: p.title,
       description: plainText(p.html),
       section: "posts",
+      ogImage: p.cover || (p.parent && p.parent.cover) || "",
+      ogType: "article",
       body: `<div class="post-stream single">${postItem(p)}</div>
 <p class="back"><a href="/posts/">All posts</a></p>`,
     })
@@ -508,23 +537,29 @@ write(
   })
 );
 
-// RSS feed (writings, videos and posts together)
+// RSS feed (writings, videos and posts together). Pinterest's auto-publish reads the image in each item.
+const fileSize = (u) => {
+  try { return fs.statSync(path.join(STATIC, u)).size; } catch { return 0; }
+};
 const feedItems = [
-  ...writings.map((w) => ({ t: w.title, u: `/writings/${w.slug}/`, d: w.date, h: w.html })),
-  ...videos.map((v) => ({ t: v.title, u: `/videos/${v.slug}/`, d: v.date, h: v.html })),
-  ...posts.map((p) => ({ t: p.title, u: `/posts/${p.slug}/`, d: p.date, h: p.html })),
+  ...writings.map((w) => ({ t: w.title, u: `/writings/${w.slug}/`, d: w.date, h: w.html, s: w.summary, img: pinOf(w.cover) })),
+  ...videos.map((v) => ({ t: v.title, u: `/videos/${v.slug}/`, d: v.date, h: v.html, img: v.thumbnail || "" })),
+  ...posts.map((p) => ({ t: p.title, u: `/posts/${p.slug}/`, d: p.date, h: p.html, img: pinOf(p.cover || (p.parent && p.parent.cover)) })),
 ]
   .sort((a, b) => b.d - a.d)
   .slice(0, 30);
 write(
   "/feed.xml",
   `<?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel>
+<rss version="2.0" xmlns:media="http://search.yahoo.com/mrss/"><channel>
 <title>${esc(site.title)}</title><link>${esc(site.url || "/")}</link><description>${esc(site.tagline)}</description>
 ${feedItems
   .map(
     (i) =>
-      `<item><title>${esc(i.t)}</title><link>${esc(site.url + i.u)}</link><guid>${esc(site.url + i.u)}</guid><pubDate>${i.d.toUTCString()}</pubDate><description>${esc(i.h)}</description></item>`
+      `<item><title>${esc(i.t)}</title><link>${esc(site.url + i.u)}</link><guid>${esc(site.url + i.u)}</guid><pubDate>${i.d.toUTCString()}</pubDate>` +
+      `<description>${esc((i.img ? `<p><img src="${absUrl(i.img)}" alt=""></p>` : "") + (i.s ? `<p>${esc(i.s)}</p>` : "") + i.h)}</description>` +
+      (i.img ? `<enclosure url="${esc(absUrl(i.img))}" type="image/jpeg" length="${fileSize(i.img)}"/><media:content url="${esc(absUrl(i.img))}" medium="image" type="image/jpeg"/>` : "") +
+      `</item>`
   )
   .join("\n")}
 </channel></rss>`

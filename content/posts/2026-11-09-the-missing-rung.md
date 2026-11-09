@@ -1,5 +1,6 @@
 ---
 title: "The Missing Rung"
+cover: /images/covers/the-missing-rung.jpg
 date: "2026-11-09"
 article: "episode-3-the-ladder"
 episode: 3

@@ -1,5 +1,6 @@
 ---
 title: "Episode 1: The 1865 Exercise"
+cover: /images/covers/episode-1-the-1865-exercise.jpg
 date: "2026-11-09"
 kind: "1865 Exercise"
 episode: 1

@@ -1,5 +1,6 @@
 ---
 title: "Are Humans Just Holding On?"
+cover: /images/covers/are-humans-just-holding-on.jpg
 date: "2026-11-09"
 article: "episode-3-the-ladder"
 episode: 3
