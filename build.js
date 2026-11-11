@@ -218,11 +218,28 @@ const SERIES = KINDS.find((k) => k.series);
 const kindOf = (w) => KINDS.find((k) => k.name === w.kind) || KINDS[1];
 
 const socials = [
+  ["X", about.data.x],
+  ["LinkedIn", about.data.linkedin],
+  ["Threads", about.data.threads],
+  ["Bluesky", about.data.bluesky],
+  ["Mastodon", about.data.mastodon],
+  ["Substack", about.data.substack_url],
   ["YouTube", about.data.youtube_channel],
   ["Instagram", about.data.instagram],
   ["TikTok", about.data.tiktok],
   ["Facebook", about.data.facebook],
 ].filter(([, url]) => url);
+
+// Email sign-up goes to the Substack newsletter.
+const subscribeUrl = about.data.substack_url ? about.data.substack_url.replace(/\/$/, "") + "/subscribe" : "";
+const subscribeBox = (heading) =>
+  subscribeUrl
+    ? `<aside class="subscribe" aria-label="Subscribe by email">
+  <p class="subscribe-heading">${esc(heading)}</p>
+  <p>Free, by email, through Substack. Unsubscribe anytime.</p>
+  <a class="subscribe-button" href="${esc(subscribeUrl)}">Subscribe</a>
+</aside>`
+    : "";
 
 // ---------- templates ----------
 
@@ -272,6 +289,7 @@ ${body}
 </main>
 <footer class="footer">
   <div class="wrap footer-inner">
+        ${subscribeUrl ? `<p class="footer-subscribe">Get new writing by email. <a href="${esc(subscribeUrl)}">Subscribe</a></p>` : ""}
         ${socials.length ? `<p class="footer-links">${socials.map(([n, u]) => `<a href="${esc(u)}" rel="me">${n}</a>`).join("")}</p>` : ""}
     <p class="footer-small">© ${new Date().getFullYear()} ${esc(site.title)}. <a href="/feed.xml">RSS feed</a></p>
   </div>
@@ -430,6 +448,7 @@ writings.forEach((w) => {
     <p>The world isn't a line with two ends, black and white, us and them. It's round, and we're all on it together.</p>
     <p class="signoff-slogan">The world isn't black and white. It's blue and green.</p>
   </aside>
+  ${subscribeBox(k.series ? `Get the next ${k.name} episode by email` : "Get new writing by email")}
   ${k.series ? `<p class="series-link">This article is part of the ${esc(k.name)}. <a href="/writings/${k.slug}/">See every ${esc(k.name)} article</a></p>` : ""}
 </article>
 <nav class="pager" aria-label="More writing">
@@ -506,7 +525,7 @@ posts.forEach((p) =>
       section: "posts",
       ogImage: p.cover || (p.parent && p.parent.cover) || "",
       ogType: "article",
-      body: `<div class="post-stream single">${postItem(p)}</div>
+      body: `<div class="post-stream single">${postItem(p)}${subscribeBox(p.parent && kindOf(p.parent).series ? `Get the next ${kindOf(p.parent).name} episode by email` : "Get new writing by email")}</div>
 <p class="back"><a href="/posts/">All posts</a></p>`,
     })
   )

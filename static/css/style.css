@@ -227,6 +227,28 @@ a:hover { color: var(--pine); }
 }
 .series-link a { font-weight: 700; }
 
+/* email sign-up */
+.subscribe {
+  max-width: var(--measure);
+  margin: 2.5rem 0 0;
+  padding: 1.25rem 1.4rem 1.4rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-family: var(--sans);
+}
+.is-poem .subscribe { margin-left: auto; margin-right: auto; max-width: 30rem; }
+.subscribe p { margin: 0 0 0.5rem; color: var(--muted); }
+.subscribe .subscribe-heading { font-family: var(--serif); font-size: 1.35rem; font-weight: 700; color: var(--ink); line-height: 1.25; }
+.subscribe-button {
+  display: inline-block; margin-top: 0.4rem; padding: 0.55rem 1.3rem; border-radius: 999px;
+  background: linear-gradient(90deg, var(--sea-deep), var(--pine)); color: #ffffff; font-weight: 700; text-decoration: none;
+}
+.subscribe-button:hover { color: #ffffff; filter: brightness(1.12); }
+.post-stream .subscribe { margin-top: 1.5rem; }
+.footer-subscribe { margin: 0 0 0.75rem; font-size: 1.1rem; }
+.footer-subscribe a { font-weight: 700; }
+
 .pager {
   max-width: var(--measure);
   display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;

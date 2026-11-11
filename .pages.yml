@@ -145,6 +145,24 @@ content:
       - name: site_url
         label: Website address, once you have it (for example https://blueandgreenworld.com)
         type: string
+      - name: substack_url
+        label: Substack newsletter address (powers the Subscribe buttons), e.g. https://bartholomewfamilyfun.substack.com
+        type: string
+      - name: x
+        label: X link
+        type: string
+      - name: linkedin
+        label: LinkedIn link
+        type: string
+      - name: threads
+        label: Threads link
+        type: string
+      - name: bluesky
+        label: Bluesky link
+        type: string
+      - name: mastodon
+        label: Mastodon link
+        type: string
       - name: youtube_channel
         label: YouTube channel link
         type: string
