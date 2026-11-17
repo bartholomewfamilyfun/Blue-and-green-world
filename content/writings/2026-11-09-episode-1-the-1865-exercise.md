@@ -1,7 +1,7 @@
 ---
 title: "Episode 1: The 1865 Exercise"
 cover: /images/covers/episode-1-the-1865-exercise.jpg
-date: "2026-11-09"
+date: "2026-11-17"
 kind: "1865 Exercise"
 episode: 1
 summary: "The class denied land and capital in 1865 became the backbone of billion-dollar industries. That wasn't a miracle. It was a mechanism, traced here in eight steps."
