@@ -352,3 +352,22 @@ a:hover { color: var(--pine); }
 .short-version p:last-child { margin-bottom: 0; }
 .short-version-label { font-family: var(--sans); font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
 .post-readnav { flex-basis: 100%; margin-top: 0.2rem; }
+
+/* pull quotes: a short line from the article, set in the right margin on wide screens and inline on phones.
+   In a writing's HTML: <aside class="pullquote">The quoted line.</aside> placed before the paragraph it sits beside. */
+.prose .pullquote {
+  margin: 1.8em 0;
+  padding: 0.2em 0 0.2em 1.1rem;
+  border-left: 4px solid transparent;
+  border-image: linear-gradient(180deg, var(--sea), var(--pine)) 1;
+  font-size: 1.45rem; line-height: 1.35; font-style: italic; font-weight: 500;
+  color: var(--ink);
+}
+@media (min-width: 64rem) {
+  .prose .pullquote {
+    float: right; clear: right;
+    width: 15rem;
+    margin: 0.3em -18rem 1em 2rem;
+    font-size: 1.3rem;
+  }
+}
