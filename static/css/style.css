@@ -371,3 +371,6 @@ a:hover { color: var(--pine); }
     font-size: 1.3rem;
   }
 }
+
+.video-section { margin: 1.5rem 0 2.5rem; }
+.video-section .video-grid { margin-top: 1rem; }

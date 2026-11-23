@@ -190,6 +190,14 @@ const writings = loadCollection("writings");
 const videos = loadCollection("videos");
 const posts = loadCollection("posts");
 
+// Videos with a `series` (e.g. "1865 Exercise") get their own section on the Videos page;
+// the rest are Bartholomew Family Fun travel videos.
+const seriesVideos = videos.filter((v) => v.series);
+const familyVideos = videos.filter((v) => !v.series);
+const SERIES_LINKS = { "1865 exercise": "/writings/1865-exercise/" };
+const seriesName = (v) => (/^1865/i.test(v.series) ? "The 1865 Exercise" : String(v.series));
+const seriesHref = (v) => SERIES_LINKS[String(v.series).toLowerCase()] || "/videos/";
+
 // Quick reads: a post can name the full article it comes from (by its web address or its title).
 const norm = (x) => String(x || "").toLowerCase().replace(/^.*\/writings\//, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 posts.forEach((p) => {
@@ -380,7 +388,7 @@ write(
       <a class="more" href="/videos/">All videos</a>
     </div>
     <p class="section-intro">Family travel videos.</p>
-    ${videos.length ? `<ul class="video-grid">${videos.slice(0, 3).map(videoCard).join("")}</ul>` : empty("videos", "")}
+    ${familyVideos.length ? `<ul class="video-grid">${familyVideos.slice(0, 3).map(videoCard).join("")}</ul>` : empty("videos", "")}
   </section>
 
   <section class="home-posts" aria-labelledby="h-posts">
@@ -463,15 +471,23 @@ writings.forEach((w) => {
 write(
   "/videos/",
   layout({
-    title: site.videoBrand,
-    description: "Family travel videos from Bartholomew Family Fun.",
+    title: "Videos",
+    description: "Videos from The 1865 Exercise and Bartholomew Family Fun.",
     section: "videos",
     body: `
 <header class="page-head">
-  <h1 class="brand-heading">${esc(site.videoBrand)}</h1>
-  <p>Family travel videos.${about.data.youtube_channel ? ` <a href="${esc(about.data.youtube_channel)}">Subscribe on YouTube</a>.` : ""}</p>
+  <h1>Videos</h1>
+  <p>Full episodes and Shorts from The 1865 Exercise, and family travel videos from Bartholomew Family Fun.${about.data.youtube_channel ? ` <a href="${esc(about.data.youtube_channel)}">Subscribe on YouTube</a>.` : ""}</p>
 </header>
-${videos.length ? `<ul class="video-grid">${videos.map(videoCard).join("")}</ul>` : empty("videos", "")}`,
+${seriesVideos.length ? `<section class="video-section" id="the-1865-exercise" aria-labelledby="h-v1865">
+  <div class="section-head"><h2 id="h-v1865">The 1865 Exercise</h2><a class="more" href="/writings/1865-exercise/">Read the series</a></div>
+  <ul class="video-grid">${seriesVideos.map(videoCard).join("")}</ul>
+</section>` : ""}
+<section class="video-section" id="bartholomew-family-fun" aria-labelledby="h-vfamily">
+  <div class="section-head"><h2 id="h-vfamily" class="brand-heading">${esc(site.videoBrand)}</h2></div>
+  <p class="section-intro">Family travel videos.</p>
+  ${familyVideos.length ? `<ul class="video-grid">${familyVideos.map(videoCard).join("")}</ul>` : empty("videos", "")}
+</section>`,
   })
 );
 
@@ -484,13 +500,13 @@ videos.forEach((v) => {
     `/videos/${v.slug}/`,
     layout({
       title: v.title,
-      description: plainText(v.html) || `${v.title}, a ${site.videoBrand} video.`,
+      description: plainText(v.html) || `${v.title}, a ${v.series ? seriesName(v) : site.videoBrand} video.`,
       section: "videos",
       ogImage: yt ? `https://i.ytimg.com/vi/${yt.id}/hqdefault.jpg` : "",
       body: `
 <article class="video-page">
   <header class="piece-head">
-    <a class="brand-small" href="/videos/">${esc(site.videoBrand)}</a>
+    ${v.series ? `<a class="brand-small" href="${seriesHref(v)}">${esc(seriesName(v))}</a>` : `<a class="brand-small" href="/videos/">${esc(site.videoBrand)}</a>`}
     <h1>${esc(v.title)}</h1>
     <p class="meta">${v.place ? esc(v.place) + ", " : ""}${fmtDate(v.date)}</p>
   </header>

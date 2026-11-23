@@ -78,6 +78,9 @@ content:
       - name: place
         label: Place
         type: string
+      - name: series
+        label: Series (leave empty for Bartholomew Family Fun; "1865 Exercise" for series videos)
+        type: string
       - name: thumbnail
         label: Cover image (optional; the YouTube thumbnail is used if you leave this empty)
         type: image
