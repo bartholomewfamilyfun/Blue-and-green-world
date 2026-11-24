@@ -379,7 +379,7 @@ write(
       <h2 id="h-writing">Latest writing</h2>
       <a class="more" href="/writings/">All writings</a>
     </div>
-    ${writings.length ? `<ul class="writing-list">${writings.slice(0, 4).map(writingItem).join("")}</ul>` : empty("writings", "")}
+    ${writings.length ? `<ul class="writing-list">${seriesAscending(writings.slice(0, 4)).map(writingItem).join("")}</ul>` : empty("writings", "")}
   </section>
 
   <section class="home-videos" aria-labelledby="h-videos">
@@ -403,8 +403,16 @@ write(
 );
 
 // Writings index + one page per kind
+// 1865 Exercise episodes always read in ascending order (1, 2, 3, 4...) wherever they are listed:
+// they keep their slots in the newest-first list, but fill those slots in episode order.
+function seriesAscending(list) {
+  const series = list.filter((x) => kindOf(x).series).sort(seriesOrder);
+  let i = 0;
+  return list.map((x) => (kindOf(x).series ? series[i++] : x));
+}
+
 function writingsIndex(active) {
-  let list = active ? writings.filter((w) => kindOf(w).slug === active.slug) : writings;
+  let list = active ? writings.filter((w) => kindOf(w).slug === active.slug) : seriesAscending(writings);
   if (active && active.series) list = [...list].sort(seriesOrder);
   const filters = [`<a href="/writings/"${!active ? ' aria-current="page"' : ""}>All</a>`]
     .concat(KINDS.map((k) => `<a href="/writings/${k.slug}/"${active === k ? ' aria-current="page"' : ""}>${k.name}</a>`))
