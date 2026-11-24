@@ -403,12 +403,12 @@ write(
 );
 
 // Writings index + one page per kind
-// 1865 Exercise episodes always read in ascending order (1, 2, 3, 4...) wherever they are listed:
-// they keep their slots in the newest-first list, but fill those slots in episode order.
+// Mixed lists: other writing first (newest on top), then the 1865 Exercise episodes
+// as one block in ascending order (1, 2, 3, 4...).
 function seriesAscending(list) {
+  const other = list.filter((x) => !kindOf(x).series);
   const series = list.filter((x) => kindOf(x).series).sort(seriesOrder);
-  let i = 0;
-  return list.map((x) => (kindOf(x).series ? series[i++] : x));
+  return other.concat(series);
 }
 
 function writingsIndex(active) {
